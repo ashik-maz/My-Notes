@@ -636,29 +636,16 @@ class _NotesListScreenState extends State<NotesListScreen> {
                   ],
                 ),
                 const SizedBox(height: 8),
-                _isGridView
-                    ? Expanded(
-                        child: Text(
-                          note.description,
-                          maxLines: 4,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.outfit(
-                            fontSize: 14,
-                            color: Colors.grey[600],
-                            height: 1.4,
-                          ),
-                        ),
-                      )
-                    : Text(
-                        note.description,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.outfit(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                          height: 1.4,
-                        ),
-                      ),
+                Text(
+                  note.description,
+                  maxLines: _isGridView ? 4 : 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.outfit(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                    height: 1.4,
+                  ),
+                ),
                 const SizedBox(height: 8),
                 Divider(color: Colors.grey[300]!, height: 1),
                 const SizedBox(height: 6),
