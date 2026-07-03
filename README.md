@@ -1,101 +1,112 @@
 # Quick Notes - Flutter Notes Management App 📝
 
-A sleek, modern, and beautiful Notes Management Application built with Flutter and Cloud Firestore. Created for the **Ostad Module 6 Assignment**.
+A sleek, responsive, and beautiful Notes Management Application built with **Flutter**, **Firebase Cloud Firestore**, and **Firebase Authentication**. Created for the **Ostad Module 6 Assignment**.
 
-This project demonstrates full **CRUD (Create, Read, Update, Delete)** operations synced in real-time with Firebase Cloud Firestore.
+Refactored utilizing **Clean Architecture** to maintain clean boundaries between domain logic, data models/datasources, and presentation states.
 
 ---
 
 ## ✨ Features
 
-- **Beautiful Responsive UI**: Tailored with a custom violet/teal color palette, glassmorphism elements, custom cards, and smooth micro-animations.
-- **Real-Time Synchronization**: Stream notes directly from Cloud Firestore with instant state updates.
-- **Dynamic Views**: Instantly switch between **List View** and **Grid View** layout styles.
-- **Search Filtering**: Live client-side search to filter notes by title or description instantly.
-- **CRUD Operations**:
-  - **Create**: Add notes with validated title and description inputs.
-  - **Read**: Elegant stream list sorted by newest creation timestamp.
-  - **Update**: Edit title/description inside the input form.
-  - **Delete**: Safely delete notes with an alert dialog confirmation.
-- **Offline/Demo Fallback**: If Firebase is not configured, the app automatically switches to an in-memory "Demo Mode" list, allowing you to test the entire application interface instantly without setup errors!
+### 🔑 1. Authentication (Auth)
+- **Email & Password Login**: Full client-side input validation and responsive error feedback.
+- **User Registration**: Register with Name, Email, and Password with confirm password matches.
+- **Forgot Password**: Password recovery stream that sends a reset link to the email.
+- **Continue with Google**: Seamless OAuth integration utilizing native Google Sign-In.
+- **Demo Mode fallback**: If offline or Firebase is not configured, the app launches instantly in Demo Mode using an in-memory session.
+
+### 📝 2. Notes Management (CRUD - Account Personalized)
+- **Account Isolation**: Every note is bound to the logged-in user's account (`userId`). Users only query and modify their own notes.
+- **Create**: Add a note with validated title and description forms.
+- **Read**: Live real-time streams displaying note cards sorted by the newest timestamp.
+- **Update**: Edit the note title and description inside a prefilled form.
+- **Delete**: Action button and confirmation dialogs to prevent accidental note removals.
+
+### 🎨 3. UX & Aesthetic Elements
+- **Layout Toggles**: Switch between **List View** and **Grid View** layout styles.
+- **Real-time Live Search**: Instant client-side search query filtering by title or description content.
+- **Micro-Animations**: Smooth visual feedback transitions (using `AnimatedSwitcher`, hover states, custom circular background blobs).
+- **Responsive Theme**: Indigo & Teal Modern Color palette utilizing Google Fonts (`Outfit`).
 
 ---
 
-## 🛠️ Tech Stack & Packages
+## 🏗️ Architecture Design (Clean Architecture)
 
-- **Framework**: [Flutter](https://flutter.dev) (v3.41.6 stable)
-- **Database**: [Cloud Firestore](https://pub.dev/packages/cloud_firestore)
-- **Typography**: [Google Fonts (Outfit)](https://pub.dev/packages/google_fonts)
-- **Loading Indicators**: [Flutter SpinKit](https://pub.dev/packages/flutter_spinkit)
-- **Date Formatting**: [Intl](https://pub.dev/packages/intl)
+The codebase strictly adheres to **Clean Architecture** principles, splitting concerns into three distinct layers structured by features:
+
+```
+lib/
+├── core/
+│   └── usecase/              # Base standard Usecase interfaces
+├── features/
+│   ├── auth/                 # Authentication Feature
+│   │   ├── domain/           # Entities, Repository Interfaces, Use Cases
+│   │   ├── data/             # Models (DTOs), Remote Data Sources, Repositories Impl
+│   │   └── presentation/     # Controllers (Notifiers), UI Screens
+│   └── notes/                # Notes Feature (CRUD)
+│       ├── domain/           # Entities, Repository Interfaces, Use Cases
+│       ├── data/             # Models (DTOs), Remote Data Sources, Repositories Impl
+│       └── presentation/     # Controllers (Notifiers), UI Screens
+├── auth_wrapper.dart         # Authentication state router
+├── service_locator.dart      # Custom Dependency Injection service container
+└── main.dart                 # Application entry point
+```
+
+### Dependency Injection (DI)
+Managed via a custom service locator container in [service_locator.dart](file:///c:/Users/Ashikuzzaman/Desktop/NoteApp/lib/service_locator.dart). It instantiates singletons for Data Sources, Repositories, Use Cases, and Controllers (`ChangeNotifier` State Notifiers) to completely decouple creation logic from widgets.
 
 ---
 
-## 🚀 How to Run & Connect to Firebase
+## 🚀 Setup & Firebase Configuration
 
-By default, the app compiles out-of-the-box and runs in **Demo Mode**. To link it to your own **Cloud Firestore Database**, follow these steps:
+### 🔑 Google Sign-In Credentials (SHA Keys)
+To enable Google Authentication, copy these SHA fingerprints and add them under your **Firebase Console → Project Settings → Android App**:
+- **SHA-1 Fingerprint**: `EF:28:D9:0D:F6:DE:30:42:0C:9D:7B:7D:5E:3B:75:E3:CF:0F:4B:5D`
+- **SHA-256 Fingerprint**: `1E:99:10:2F:96:36:85:01:09:D2:8A:D6:6C:96:80:F7:99:CC:DD:B8:11:6C:3F:53:54:F3:09:15:6F:0B:E3:7E`
 
-### 1. Install FlutterFire CLI
-Make sure you have Node.js / npm installed and the Firebase CLI tool.
-Then, activate the FlutterFire CLI globally in your terminal:
-```bash
-dart pub global activate flutterfire_cli
-```
+### 🛠️ Step-by-Step Connection Guide
+1. Create a Firebase Project in the [Firebase Console](https://console.firebase.google.com).
+2. Enable **Email/Password** and **Google** sign-in providers in the **Firebase Auth** panel.
+3. Enable **Cloud Firestore** and configure database access rules to allow reads and writes.
+4. Activate the FlutterFire CLI:
+   ```bash
+   dart pub global activate flutterfire_cli
+   ```
+5. Configure your app by running in the project root:
+   ```bash
+   flutterfire configure --project=notemanagement-task
+   ```
+6. Add the local SHA fingerprints to the Android configuration inside the console.
 
-### 2. Configure Firebase
-In your terminal, navigate to the root directory of this project (`NoteApp`) and run:
-```bash
-flutterfire configure
-```
-- Select your Firebase project (or create a new one).
-- Select the platforms you want to support (Android, iOS, Web).
-- This command will automatically generate `lib/firebase_options.dart` with your unique configuration, replacing the initial mock placeholder.
+---
 
-### 3. Setup Firestore Rules
-Go to the [Firebase Console](https://console.firebase.google.com/), click on your project, navigate to **Firestore Database**, and create a database.
-Under the **Rules** tab, enable read/write access for development:
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if true; // For testing purposes
-    }
-  }
-}
-```
+## 🛠️ Build and Running Instructions
 
-### 4. Run the Project
-Compile and run the project locally on your emulator, browser, or device:
+### Run the App
+Launch the Flutter development server (supports Android, iOS, and Web):
 ```bash
 flutter run
 ```
 
+### Run Tests
+Ensure all unit/widget tests pass cleanly:
+```bash
+flutter test
+```
+
+### Code Quality Analysis
+Verify type safety and project health:
+```bash
+flutter analyze
+```
+
 ---
 
-## 🤝 Submission & Git Setup
-
-To submit this project as required by the Ostad assignment:
-
-1. Create a new **public** repository on your GitHub account named `NoteApp` or similar.
-2. Open your terminal in this directory and execute:
-```bash
-# Initialize git repository
-git init
-
-# Add all files
-git add .
-
-# Create initial commit
-git commit -m "feat: complete notes management app with Cloud Firestore integration"
-
-# Rename default branch to main
-git branch -M main
-
-# Link to your remote GitHub repo
-git remote add origin https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPOSITORY_NAME.git
-
-# Push code to GitHub
-git push -u origin main
-```
-3. Share your public GitHub repository URL link on the Ostad submission page!
+## 📦 Core Dependencies
+- `firebase_core`: Base Firebase framework initialization.
+- `firebase_auth`: User account credentials, email management, and sessions.
+- `google_sign_in`: OAuth launcher for Google accounts.
+- `cloud_firestore`: Realtime Cloud database streams.
+- `google_fonts`: Outfit responsive typography.
+- `flutter_spinkit`: Loading indicators.
+- `intl`: Localized date-time formatting.
