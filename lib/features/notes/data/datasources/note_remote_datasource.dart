@@ -65,6 +65,7 @@ class NoteRemoteDataSourceImpl implements NoteRemoteDataSource {
       if (collection == null) {
         throw Exception('Firebase not initialized');
       }
+      print("FIRESTORE: Fetching notes for userId: '$userId'");
       return collection
           .where('userId', isEqualTo: userId)
           .snapshots()
@@ -102,6 +103,7 @@ class NoteRemoteDataSourceImpl implements NoteRemoteDataSource {
 
     final collection = _notesCollection;
     if (collection == null) throw Exception('Firebase not initialized');
+    print("FIRESTORE: Saving note for userId: '$userId'");
     await collection.add({
       'title': title,
       'description': description,
