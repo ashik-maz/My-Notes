@@ -65,34 +65,49 @@ class _LoginScreenState extends State<LoginScreen> {
       _isGoogleLoading = true;
     });
 
-    final success = await _authNotifier.signInWithGoogle();
-    if (success && mounted) {
-      final user = _authNotifier.currentUser;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Welcome, ${user?.displayName ?? "User"}! 👋', style: GoogleFonts.outfit()),
-          backgroundColor: const Color(0xFF0C6B37),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          margin: const EdgeInsets.all(16),
-        ),
-      );
-    } else if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(_authNotifier.errorMessage ?? 'Google Sign-In Failed', style: GoogleFonts.outfit()),
-          backgroundColor: Colors.redAccent.withValues(alpha: 0.9),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          margin: const EdgeInsets.all(16),
-        ),
-      );
-    }
-
-    if (mounted) {
-      setState(() {
-        _isGoogleLoading = false;
-      });
+    try {
+      final success = await _authNotifier.signInWithGoogle();
+      if (success && mounted) {
+        final user = _authNotifier.currentUser;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Welcome, ${user?.displayName ?? "User"}! 👋', style: GoogleFonts.outfit()),
+            backgroundColor: const Color(0xFF0C6B37),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            margin: const EdgeInsets.all(16),
+          ),
+        );
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(_authNotifier.errorMessage ?? 'Google Sign-In Failed', style: GoogleFonts.outfit()),
+            backgroundColor: Colors.redAccent.withValues(alpha: 0.9),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            margin: const EdgeInsets.all(16),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Google Sign-In is not configured for Web. Please set the Client ID in web/index.html.', style: GoogleFonts.outfit()),
+            backgroundColor: Colors.redAccent,
+            duration: const Duration(seconds: 5),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            margin: const EdgeInsets.all(16),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isGoogleLoading = false;
+        });
+      }
     }
   }
 
