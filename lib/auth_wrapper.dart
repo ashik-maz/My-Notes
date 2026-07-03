@@ -3,7 +3,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'features/auth/domain/entities/user_entity.dart';
 import 'features/auth/presentation/controllers/auth_notifier.dart';
 import 'features/auth/presentation/screens/login_screen.dart';
-import 'features/notes/presentation/screens/notes_list_screen.dart';
+import 'features/notes/presentation/screens/main_navigation_screen.dart';
 import 'service_locator.dart';
 
 class AuthWrapper extends StatelessWidget {
@@ -46,8 +46,8 @@ class AuthWrapper extends StatelessWidget {
 
         final user = snapshot.data;
         if (user != null) {
-          // User is authenticated, show notes list
-          return const NotesListScreen();
+          // User is authenticated, show tabbed main navigation screen
+          return const MainNavigationScreen();
         } else {
           // User is not authenticated, show login page
           return const LoginScreen();

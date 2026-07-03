@@ -24,6 +24,15 @@ class _NotesListScreenState extends State<NotesListScreen> {
   String _searchQuery = "";
   final TextEditingController _searchController = TextEditingController();
 
+  Stream<List<NoteEntity>>? _notesStream;
+  String? _lastUserId;
+
+  void _initNotesStream(String userId) {
+    if (_lastUserId == userId && _notesStream != null) return;
+    _lastUserId = userId;
+    _notesStream = _noteNotifier.getNotes(userId);
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -217,6 +226,7 @@ class _NotesListScreenState extends State<NotesListScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final userId = _authNotifier.currentUser?.uid ?? 'mock-user-123';
+    _initNotesStream(userId);
     final displayName = _authNotifier.currentUser?.displayName ??
         _authNotifier.currentUser?.email?.split('@')[0] ?? 'User';
 
@@ -255,13 +265,6 @@ class _NotesListScreenState extends State<NotesListScreen> {
               });
             },
             tooltip: _isGridView ? 'Switch to List View' : 'Switch to Grid View',
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout_rounded, color: Colors.white),
-            onPressed: () async {
-              await _authNotifier.signOut();
-            },
-            tooltip: 'Logout',
           ),
         ],
       ),
@@ -358,7 +361,7 @@ class _NotesListScreenState extends State<NotesListScreen> {
           // Notes List Stream
           Expanded(
             child: StreamBuilder<List<NoteEntity>>(
-              stream: _noteNotifier.getNotes(userId),
+              stream: _notesStream,
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
                   return _buildErrorState(snapshot.error.toString());

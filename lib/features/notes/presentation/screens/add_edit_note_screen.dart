@@ -8,8 +8,9 @@ import '../controllers/note_notifier.dart';
 
 class AddEditNoteScreen extends StatefulWidget {
   final NoteEntity? note;
+  final VoidCallback? onSaveComplete;
 
-  const AddEditNoteScreen({super.key, this.note});
+  const AddEditNoteScreen({super.key, this.note, this.onSaveComplete});
 
   @override
   State<AddEditNoteScreen> createState() => _AddEditNoteScreenState();
@@ -65,7 +66,13 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
     }
 
     if (success && mounted) {
-      Navigator.pop(context);
+      if (widget.onSaveComplete != null) {
+        _titleController.clear();
+        _descriptionController.clear();
+        widget.onSaveComplete!();
+      } else {
+        Navigator.pop(context);
+      }
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         _buildCustomSnackBar(
@@ -97,6 +104,7 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
+        automaticallyImplyLeading: widget.onSaveComplete == null,
         title: Text(
           _isEditing ? 'Edit Note' : 'Create Note',
           style: GoogleFonts.outfit(
