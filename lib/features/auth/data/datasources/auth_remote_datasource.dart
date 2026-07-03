@@ -17,6 +17,15 @@ abstract class AuthRemoteDataSource {
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
+  // Completer to protect Firebase calls from being made before initialization finishes
+  static final Completer<void> _initCompleter = Completer<void>();
+
+  static void setInitialized() {
+    if (!_initCompleter.isCompleted) {
+      _initCompleter.complete();
+    }
+  }
+
   // Lazy-load FirebaseAuth so it doesn't throw on initialization if Firebase is offline/not configured
   FirebaseAuth get _auth => FirebaseAuth.instance;
 
@@ -29,15 +38,21 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Stream<UserModel?> get authStateChanges {
-    if (_isDemoMode) {
-      scheduleMicrotask(() => _mockUserStreamController.add(_mockUser));
-      return _mockUserStreamController.stream;
-    }
+    final controller = StreamController<UserModel?>.broadcast();
 
-    return _auth.authStateChanges().map((user) {
-      if (user == null) return null;
-      return UserModel.fromFirebase(user);
+    _initCompleter.future.then((_) {
+      if (_isDemoMode) {
+        scheduleMicrotask(() => _mockUserStreamController.add(_mockUser));
+        _mockUserStreamController.stream.listen(controller.add, onError: controller.addError);
+      } else {
+        _auth.authStateChanges().map((user) {
+          if (user == null) return null;
+          return UserModel.fromFirebase(user);
+        }).listen(controller.add, onError: controller.addError);
+      }
     });
+
+    return controller.stream;
   }
 
   @override
@@ -46,9 +61,17 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       return _mockUser;
     }
 
-    final user = _auth.currentUser;
-    if (user == null) return null;
-    return UserModel.fromFirebase(user);
+    if (!_initCompleter.isCompleted) {
+      return null;
+    }
+
+    try {
+      final user = _auth.currentUser;
+      if (user == null) return null;
+      return UserModel.fromFirebase(user);
+    } catch (_) {
+      return null;
+    }
   }
 
   @override

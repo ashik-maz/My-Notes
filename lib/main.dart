@@ -6,9 +6,21 @@ import 'features/notes/data/datasources/note_remote_datasource.dart';
 import 'firebase_options.dart';
 import 'service_locator.dart';
 
-void main() async {
+import 'features/auth/data/datasources/auth_remote_datasource.dart';
+
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
   
+  // Initialize Dependency Injection container
+  initDependencies();
+
+  runApp(const MyApp());
+
+  // Initialize Firebase in the background asynchronously
+  _initializeFirebase();
+}
+
+Future<void> _initializeFirebase() async {
   try {
     // Attempt to initialize Firebase with a timeout.
     // If it takes too long (e.g. slow network or blocked scripts on web),
@@ -25,12 +37,10 @@ void main() async {
   } catch (e) {
     print("Firebase initialization failed or timed out. Running in Demo Mode: $e");
     NoteRemoteDataSourceImpl.isDemoMode = true;
+  } finally {
+    // Release the init lock so Auth starts listening to sessions
+    AuthRemoteDataSourceImpl.setInitialized();
   }
-
-  // Initialize Dependency Injection container
-  initDependencies();
-
-  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -42,17 +52,17 @@ class MyApp extends StatelessWidget {
       title: 'Quick Notes',
       debugShowCheckedModeBanner: false,
       
-      // Beautiful Light Theme with Slate & Indigo accents
+      // Beautiful Light Theme with Forest Green elements
       theme: ThemeData(
         useMaterial3: true,
-        primaryColor: const Color(0xFF6366F1), // Modern Violet/Indigo
-        scaffoldBackgroundColor: const Color(0xFFF8FAFC), // Sleek light gray/blue slate
+        primaryColor: const Color(0xFF0C6B37), // Forest Green
+        scaffoldBackgroundColor: const Color(0xFFEBF6F0), // Soft mint slate background
         cardColor: Colors.white,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF6366F1),
-          primary: const Color(0xFF6366F1),
-          secondary: const Color(0xFF14B8A6), // Vibrant Teal
-          surface: const Color(0xFFF8FAFC),
+          seedColor: const Color(0xFF0C6B37),
+          primary: const Color(0xFF0C6B37),
+          secondary: const Color(0xFF1B8E4B), // Lighter Green
+          surface: const Color(0xFFEBF6F0),
         ),
         
         // Custom Google Fonts text theme
