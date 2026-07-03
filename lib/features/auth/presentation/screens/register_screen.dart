@@ -154,7 +154,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'blueflame',
+                    'My Note',
                     style: GoogleFonts.outfit(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -271,7 +271,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'blueflame',
+                  'My Note',
                   style: GoogleFonts.outfit(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,

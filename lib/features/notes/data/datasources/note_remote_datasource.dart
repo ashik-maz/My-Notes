@@ -67,10 +67,11 @@ class NoteRemoteDataSourceImpl implements NoteRemoteDataSource {
       }
       return collection
           .where('userId', isEqualTo: userId)
-          .orderBy('createdAt', descending: true)
           .snapshots()
           .map((snapshot) {
-        return snapshot.docs.map((doc) => NoteModel.fromDocument(doc)).toList();
+        final list = snapshot.docs.map((doc) => NoteModel.fromDocument(doc)).toList();
+        list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        return list;
       });
     } catch (e) {
       print("Firestore error fetching notes, switching to Demo Mode: $e");
