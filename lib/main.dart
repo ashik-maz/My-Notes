@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,6 +13,20 @@ void main() {
   try {
     WidgetsFlutterBinding.ensureInitialized();
     
+    // Intercept visual layout and widget build errors
+    FlutterError.onError = (FlutterErrorDetails details) {
+      FlutterError.presentError(details);
+      print("FLUTTER EXCEPTION DETECTED: ${details.exception}");
+      print(details.stack);
+    };
+
+    // Intercept asynchronous background and platform errors
+    PlatformDispatcher.instance.onError = (Object error, StackTrace stack) {
+      print("PLATFORM ASYNC EXCEPTION: $error");
+      print(stack);
+      return true;
+    };
+
     // Initialize Dependency Injection container
     initDependencies();
 
