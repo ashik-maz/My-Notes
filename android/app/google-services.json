@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "11329512160",
+    "project_id": "notemanagement-task",
+    "storage_bucket": "notemanagement-task.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:11329512160:android:866bf63087f9e66b42a685",
+        "android_client_info": {
+          "package_name": "com.ostad.noteapp.note_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "11329512160-lmqtqi7is0ikulde2icr6sd2c9573p8t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ostad.noteapp.note_app",
+            "certificate_hash": "ef28d90df6de30420c9d7b7d5e3b75e3cf0f4b5d"
+          }
+        },
+        {
+          "client_id": "11329512160-1rihnjs6e9cttf4jpcsav71fb4gqek8d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfTeekisI4v7L8xpIR0U6LkLdheWtRiXY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "11329512160-1rihnjs6e9cttf4jpcsav71fb4gqek8d.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "11329512160-ropm48ih9doum8m64kubtik3kkhqh9up.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ostad.noteapp.noteApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
