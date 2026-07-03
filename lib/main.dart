@@ -10,12 +10,12 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   try {
-    // Attempt to initialize Firebase.
-    // If the credentials are placeholders, it might fail or succeed but fail on queries.
-    // We catch exceptions to gracefully fall back to Demo Mode.
+    // Attempt to initialize Firebase with a timeout.
+    // If it takes too long (e.g. slow network or blocked scripts on web),
+    // we fail gracefully and run in Demo Mode.
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
-    );
+    ).timeout(const Duration(seconds: 3));
     
     // Check if the options are still the demo placeholders
     if (DefaultFirebaseOptions.currentPlatform.apiKey.contains('replace-me')) {
@@ -23,7 +23,7 @@ void main() async {
       NoteRemoteDataSourceImpl.isDemoMode = true;
     }
   } catch (e) {
-    print("Firebase initialization failed. Running in Demo Mode: $e");
+    print("Firebase initialization failed or timed out. Running in Demo Mode: $e");
     NoteRemoteDataSourceImpl.isDemoMode = true;
   }
 
