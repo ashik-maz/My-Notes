@@ -9,15 +9,20 @@ import 'service_locator.dart';
 import 'features/auth/data/datasources/auth_remote_datasource.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize Dependency Injection container
-  initDependencies();
+  try {
+    WidgetsFlutterBinding.ensureInitialized();
+    
+    // Initialize Dependency Injection container
+    initDependencies();
 
-  runApp(const MyApp());
+    runApp(const MyApp());
 
-  // Initialize Firebase in the background asynchronously
-  _initializeFirebase();
+    // Initialize Firebase in the background asynchronously
+    _initializeFirebase();
+  } catch (e, stack) {
+    print("CRITICAL CRASH IN STARTUP: $e");
+    print(stack);
+  }
 }
 
 Future<void> _initializeFirebase() async {
