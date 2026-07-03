@@ -8,6 +8,7 @@ import 'features/auth/domain/usecases/sign_in_usecase.dart';
 import 'features/auth/domain/usecases/sign_in_with_google_usecase.dart';
 import 'features/auth/domain/usecases/sign_out_usecase.dart';
 import 'features/auth/domain/usecases/sign_up_usecase.dart';
+import 'features/auth/domain/usecases/sign_in_anonymously_usecase.dart';
 import 'features/auth/presentation/controllers/auth_notifier.dart';
 import 'features/notes/data/datasources/note_remote_datasource.dart';
 import 'features/notes/data/repositories/note_repository_impl.dart';
@@ -56,6 +57,7 @@ void initDependencies() {
   sl.registerSingleton<SignOutUseCase>(SignOutUseCase(sl<AuthRepository>()));
   sl.registerSingleton<SignInWithGoogleUseCase>(SignInWithGoogleUseCase(sl<AuthRepository>()));
   sl.registerSingleton<ResetPasswordUseCase>(ResetPasswordUseCase(sl<AuthRepository>()));
+  sl.registerSingleton<SignInAnonymouslyUseCase>(SignInAnonymouslyUseCase(sl<AuthRepository>()));
   sl.registerSingleton<GetCurrentUserUseCase>(GetCurrentUserUseCase(sl<AuthRepository>()));
   sl.registerSingleton<AuthStateChangesUseCase>(AuthStateChangesUseCase(sl<AuthRepository>()));
 
@@ -71,6 +73,7 @@ void initDependencies() {
     signUpUseCase: sl<SignUpUseCase>(),
     signOutUseCase: sl<SignOutUseCase>(),
     signInWithGoogleUseCase: sl<SignInWithGoogleUseCase>(),
+    signInAnonymouslyUseCase: sl<SignInAnonymouslyUseCase>(),
     resetPasswordUseCase: sl<ResetPasswordUseCase>(),
     getCurrentUserUseCase: sl<GetCurrentUserUseCase>(),
     authStateChangesUseCase: sl<AuthStateChangesUseCase>(),

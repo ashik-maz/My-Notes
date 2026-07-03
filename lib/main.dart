@@ -32,7 +32,7 @@ Future<void> _initializeFirebase() async {
     // we fail gracefully and run in Demo Mode.
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
-    ).timeout(const Duration(seconds: 3));
+    ).timeout(const Duration(seconds: 12));
     
     // Check if the options are still the demo placeholders
     if (DefaultFirebaseOptions.currentPlatform.apiKey.contains('replace-me')) {

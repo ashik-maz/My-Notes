@@ -5,6 +5,7 @@ import '../../domain/usecases/sign_in_usecase.dart';
 import '../../domain/usecases/sign_up_usecase.dart';
 import '../../domain/usecases/sign_out_usecase.dart';
 import '../../domain/usecases/sign_in_with_google_usecase.dart';
+import '../../domain/usecases/sign_in_anonymously_usecase.dart';
 import '../../domain/usecases/reset_password_usecase.dart';
 import '../../domain/usecases/get_current_user_usecase.dart';
 import '../../domain/usecases/auth_state_changes_usecase.dart';
@@ -14,6 +15,7 @@ class AuthNotifier extends ChangeNotifier {
   final SignUpUseCase _signUpUseCase;
   final SignOutUseCase _signOutUseCase;
   final SignInWithGoogleUseCase _signInWithGoogleUseCase;
+  final SignInAnonymouslyUseCase _signInAnonymouslyUseCase;
   final ResetPasswordUseCase _resetPasswordUseCase;
   final GetCurrentUserUseCase _getCurrentUserUseCase;
   final AuthStateChangesUseCase _authStateChangesUseCase;
@@ -27,6 +29,7 @@ class AuthNotifier extends ChangeNotifier {
     required SignUpUseCase signUpUseCase,
     required SignOutUseCase signOutUseCase,
     required SignInWithGoogleUseCase signInWithGoogleUseCase,
+    required SignInAnonymouslyUseCase signInAnonymouslyUseCase,
     required ResetPasswordUseCase resetPasswordUseCase,
     required GetCurrentUserUseCase getCurrentUserUseCase,
     required AuthStateChangesUseCase authStateChangesUseCase,
@@ -34,6 +37,7 @@ class AuthNotifier extends ChangeNotifier {
         _signUpUseCase = signUpUseCase,
         _signOutUseCase = signOutUseCase,
         _signInWithGoogleUseCase = signInWithGoogleUseCase,
+        _signInAnonymouslyUseCase = signInAnonymouslyUseCase,
         _resetPasswordUseCase = resetPasswordUseCase,
         _getCurrentUserUseCase = getCurrentUserUseCase,
         _authStateChangesUseCase = authStateChangesUseCase {
@@ -102,6 +106,21 @@ class AuthNotifier extends ChangeNotifier {
       _user = googleUser;
       _setLoading(false);
       return googleUser != null;
+    } catch (e) {
+      _errorMessage = e.toString().split(']').last.trim();
+      _setLoading(false);
+      return false;
+    }
+  }
+
+  Future<bool> signInAnonymously() async {
+    _setLoading(true);
+    _clearError();
+    try {
+      final anonUser = await _signInAnonymouslyUseCase(NoParams());
+      _user = anonUser;
+      _setLoading(false);
+      return anonUser != null;
     } catch (e) {
       _errorMessage = e.toString().split(']').last.trim();
       _setLoading(false);

@@ -21,6 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final AuthNotifier _authNotifier = sl<AuthNotifier>();
   bool _obscurePassword = true;
   bool _isGoogleLoading = false;
+  bool _isAnonymousLoading = false;
 
   @override
   void dispose() {
@@ -91,6 +92,41 @@ class _LoginScreenState extends State<LoginScreen> {
     if (mounted) {
       setState(() {
         _isGoogleLoading = false;
+      });
+    }
+  }
+
+  Future<void> _loginAnonymously() async {
+    setState(() {
+      _isAnonymousLoading = true;
+    });
+
+    final success = await _authNotifier.signInAnonymously();
+    if (success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Logged in anonymously as Guest! 🕵️', style: GoogleFonts.outfit()),
+          backgroundColor: const Color(0xFF0C6B37),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          margin: const EdgeInsets.all(16),
+        ),
+      );
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(_authNotifier.errorMessage ?? 'Anonymous Login Failed', style: GoogleFonts.outfit()),
+          backgroundColor: Colors.redAccent.withValues(alpha: 0.9),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          margin: const EdgeInsets.all(16),
+        ),
+      );
+    }
+
+    if (mounted) {
+      setState(() {
+        _isAnonymousLoading = false;
       });
     }
   }
@@ -548,7 +584,31 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-          const SizedBox(height: 25),
+          const SizedBox(height: 12),
+
+          // Anonymous Sign-In option
+          _isAnonymousLoading
+              ? Center(
+                  child: SpinKitRing(
+                    color: primaryGreen,
+                    size: 24.0,
+                  ),
+                )
+              : Center(
+                  child: TextButton(
+                    onPressed: _loginAnonymously,
+                    child: Text(
+                      'Continue Anonymous',
+                      style: GoogleFonts.outfit(
+                        color: primaryGreen,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                ),
+          const SizedBox(height: 16),
 
           // Bottom Toggle Redirect Text
           Wrap(

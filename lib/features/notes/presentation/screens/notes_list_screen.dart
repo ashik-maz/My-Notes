@@ -646,7 +646,7 @@ class _NotesListScreenState extends State<NotesListScreen> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Divider(color: Colors.grey[150]!, height: 1),
+                Divider(color: Colors.grey[300]!, height: 1),
                 const SizedBox(height: 6),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

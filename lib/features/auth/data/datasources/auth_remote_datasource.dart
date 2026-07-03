@@ -9,6 +9,7 @@ abstract class AuthRemoteDataSource {
   Future<UserModel?> signInWithEmail(String email, String password);
   Future<UserModel?> signUpWithEmail(String name, String email, String password);
   Future<UserModel?> signInWithGoogle();
+  Future<UserModel?> signInAnonymously();
   Future<void> sendPasswordResetEmail(String email);
   Future<void> signOut();
   UserModel? get currentUser;
@@ -150,6 +151,23 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     final UserCredential userCredential = await _auth.signInWithCredential(credential);
     if (userCredential.user == null) return null;
     return UserModel.fromFirebase(userCredential.user!);
+  }
+
+  @override
+  Future<UserModel?> signInAnonymously() async {
+    if (_isDemoMode) {
+      _mockUser = const UserModel(
+        uid: 'mock-anonymous-user',
+        email: 'anonymous@guest.com',
+        displayName: 'Guest User',
+      );
+      _mockUserStreamController.add(_mockUser);
+      return _mockUser;
+    }
+
+    final credential = await _auth.signInAnonymously();
+    if (credential.user == null) return null;
+    return UserModel.fromFirebase(credential.user!);
   }
 
   @override
