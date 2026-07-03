@@ -15,7 +15,11 @@ abstract class AuthRemoteDataSource {
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  GoogleSignIn? _googleSignInInstance;
+  GoogleSignIn get _googleSignIn {
+    _googleSignInInstance ??= GoogleSignIn();
+    return _googleSignInInstance!;
+  }
 
   // Completer to protect Firebase calls from being made before initialization finishes
   static final Completer<void> _initCompleter = Completer<void>();
