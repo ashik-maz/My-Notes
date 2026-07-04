@@ -42,21 +42,24 @@ void main() {
 
 Future<void> _initializeFirebase() async {
   try {
-    // Attempt to initialize Firebase with a timeout.
-    // If it takes too long (e.g. slow network or blocked scripts on web),
-    // we fail gracefully and run in Demo Mode.
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    ).timeout(const Duration(seconds: 12));
-    
     // Check if the options are still the demo placeholders
-    if (DefaultFirebaseOptions.currentPlatform.apiKey.contains('replace-me')) {
+    if (DefaultFirebaseOptions.currentPlatform.apiKey.contains('replace-me') ||
+        DefaultFirebaseOptions.currentPlatform.apiKey.isEmpty) {
       print("Firebase options are mock placeholders. Running in Demo Mode.");
       NoteRemoteDataSourceImpl.isDemoMode = true;
+      AuthRemoteDataSourceImpl.setInitialized();
+      return;
     }
+
+    // Initialize Firebase normally
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    print("Firebase initialized successfully.");
   } catch (e) {
-    print("Firebase initialization failed or timed out. Running in Demo Mode: $e");
-    NoteRemoteDataSourceImpl.isDemoMode = true;
+    print("Firebase initialization error: $e");
+    // Do not set isDemoMode = true if we have a valid configuration,
+    // as Firebase handles offline scenarios automatically.
   } finally {
     // Release the init lock so Auth starts listening to sessions
     AuthRemoteDataSourceImpl.setInitialized();

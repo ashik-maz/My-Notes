@@ -60,27 +60,20 @@ class NoteRemoteDataSourceImpl implements NoteRemoteDataSource {
       return _mockStreamController.stream;
     }
 
-    try {
-      final collection = _notesCollection;
-      if (collection == null) {
-        throw Exception('Firebase not initialized');
-      }
-      print("FIRESTORE: Fetching notes for userId: '$userId'");
-      return collection
-          .where('userId', isEqualTo: userId)
-          .snapshots()
-          .map((snapshot) {
-        final list = snapshot.docs.map((doc) => NoteModel.fromDocument(doc)).toList();
-        list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-        return list;
-      });
-    } catch (e) {
-      print("Firestore error fetching notes, switching to Demo Mode: $e");
-      isDemoMode = true;
-      final userNotes = _mockNotes.where((note) => note.userId == userId).toList();
-      scheduleMicrotask(() => _mockStreamController.add(List.unmodifiable(userNotes)));
-      return _mockStreamController.stream;
+    final collection = _notesCollection;
+    if (collection == null) {
+      return Stream.error(Exception('Firebase not initialized'));
     }
+    
+    print("FIRESTORE: Fetching notes for userId: '$userId'");
+    return collection
+        .where('userId', isEqualTo: userId)
+        .snapshots()
+        .map((snapshot) {
+      final list = snapshot.docs.map((doc) => NoteModel.fromDocument(doc)).toList();
+      list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return list;
+    });
   }
 
   @override
